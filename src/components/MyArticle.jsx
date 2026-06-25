@@ -5,13 +5,8 @@ function MyArticle({ title, desc, level, onChangeMode, onDelete }) {
       <article>
         <h2>{title}</h2>
         <p>{desc}</p>
+        <p>난이도: {level}</p>
       </article>
-      {level != null && (
-        <div>
-          <label htmlFor="level">난이도: </label>
-          <input type="number" id="level" value={level} readOnly />
-        </div>
-      )}
 
       {onChangeMode && <button onClick={onChangeMode}>수정</button>}
 

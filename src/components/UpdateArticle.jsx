@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function UpdateArticle({ title, desc, onSubmit, level }) {
+function UpdateArticle({ title, desc, level, onSubmit }) {
   console.log("UpdateArticle render");
 
   const [content, setContent] = useState({
@@ -37,7 +37,7 @@ function UpdateArticle({ title, desc, onSubmit, level }) {
         onSubmit={(e) => {
           e.preventDefault();
           const submittedLevel = content.level == "" ? 1 : Number(content.level);
-          onSubmit(content.title, content.desc, Number(content.level));
+          onSubmit(content.title, content.desc, content.level);
         }}
       >
         <div>
@@ -50,7 +50,7 @@ function UpdateArticle({ title, desc, onSubmit, level }) {
         </div>
         <div>
           <label htmlFor="level">난이도: </label>
-          <input type="number" name="level" id="level" min="1" value={content.level} onChange={handleChange} />
+          <input type="number" name="level" id="level" min="1" onChange={handleChange} />
         </div>
         <button>Submit</button>
       </form>

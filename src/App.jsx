@@ -74,7 +74,7 @@ function App() {
         onSubmit={(_title, _desc, _level) => {
           const newId = uuidv4();
 
-          let _contents = content.concat({ id: newId, title: _title, desc: _desc });
+          let _contents = content.concat({ id: newId, title: _title, desc: _desc, level: _level });
           setContent([
             ...content,
             {
@@ -100,15 +100,15 @@ function App() {
           title={selectedArticle.title}
           desc={selectedArticle.desc}
           level={selectedArticle.level}
-          onSubmit={(nextTitle, nextDesc, nextLevel) => {
+          onSubmit={(_title, _desc, _level) => {
             setContent((prev) =>
               prev.map((p) =>
                 p.id == id
                   ? {
                       ...p,
-                      title: nextTitle,
-                      desc: nextDesc,
-                      level: nextLevel,
+                      title: _title,
+                      desc: _desc,
+                      level: _level,
                     }
                   : p,
               ),

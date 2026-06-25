@@ -7,8 +7,7 @@ function CreateArticle({ onSubmit }) {
         action=""
         onSubmit={(e) => {
           e.preventDefault();
-          const levelValue = levelRawValue === "" ? 1 : Number(levelRawValue);
-          onSubmit(e.target.title.value, e.target.desc.value, Number(e.target.level.value));
+          onSubmit(e.target.title.value, e.target.desc.value, e.target.level.value);
         }}
       >
         <div>
