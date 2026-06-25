@@ -10,115 +10,118 @@ import { v4 as uuidv4 } from "uuid";
 
 function App() {
   console.log("App render");
-  const [id, setId] = useState("1");
+  const [id, setId] = useState(1);
   const [mode, setMode] = useState("welcome");
   const [subject, setSubject] = useState({
     title: "프론트엔드 개발자",
     desc: "기본언어인 html, css, javascript부터 학습합니다.",
   });
   const [content, setContent] = useState([
-    { id: "1", title: "UI/UX 개발", desc: "사용자 경험을 고려한 직관적이고 반응성 높은 화면 구현", level: 1 },
+    {
+      id: "1",
+      title: "UI/UX 개발",
+      desc: "사용자 경험을 고려한 직관적이고 반응성 높은 화면 구현",
+      level: 1,
+    },
     {
       id: "2",
       title: "재사용이 가능한 UI 개발",
       desc: "컴포넌트 기반으로 동일한 UI를 효율적으로 재사용 가능",
       level: 2,
     },
-    { id: "3", title: "애니메이션 구현", desc: "상태 변화에 따른 자연스럽고 동적인 화면 효과 구현", level: 3 },
+    {
+      id: "3",
+      title: "애니메이션 구현",
+      desc: "상태 변화에 따른 자연스럽고 동적인 화면 효과 구현",
+      level: 3,
+    },
   ]);
   // const [maxId, setMaxid] = useState(3);
 
   const welcome = { title: "welcome", desc: "Welcome to react" };
-  const selectedArticle = useMemo(() => content.find((item) => item.id == id), [content, id]);
-  const handleChangeMode = useCallback((_id) => {
-    setMode("read");
-    setId(_id);
-  }, []);
 
   let _title = null;
   let _desc = null;
   let _level = null;
   let _article = null;
 
+  const selectedArticle = useMemo(() => content.find((item) => item.id === id), [content, id]);
+
   const handleDelete = () => {
-    if (window.confirm("정말 삭제할까요?")) {
+    if (window.confirm("정말 삭제할까요")) {
       setContent((prev) => prev.filter((item) => item.id !== id));
-      setMode("welcome");
     }
+    setMode("welcome");
   };
+  const handleSubmitCreate = (_title, _desc, _level) => {
+    const newId = uuidv4();
 
-  if (mode === "welcome") {
-    _title = welcome.title;
-    _desc = welcome.desc;
-    _article = <MyArticle title={_title} desc={_desc} />;
-  } else if (mode === "read") {
-    if (selectedArticle) {
-      _title = selectedArticle.title;
-      _desc = selectedArticle.desc;
-      _level = selectedArticle.level;
-    }
-    _article = (
-      <MyArticle
-        title={_title}
-        desc={_desc}
-        level={_level}
-        onChangeMode={() => {
-          setMode("update");
-        }}
-        onDelete={handleDelete}
-      />
-    );
-  } else if (mode === "create") {
-    _article = (
-      <CreateArticle
-        onSubmit={(_title, _desc, _level) => {
-          const newId = uuidv4();
-
-          let _contents = content.concat({ id: newId, title: _title, desc: _desc, level: _level });
-          setContent([
-            ...content,
-            {
-              id: newId,
+    let _contents = content.concat({
+      id: newId,
+      title: _title,
+      desc: _desc,
+      level: _level,
+    });
+    setContent(_contents);
+    // setMaxid(newId);
+    setId(newId);
+    setMode("read");
+  };
+  const handleSubmitUpdate = (_title, _desc, _level) => {
+    setContent((prev) =>
+      prev.map((p) =>
+        p.id === id
+          ? {
+              ...p,
               title: _title,
               desc: _desc,
               level: _level,
-            },
-          ]);
-          // setMaxid(newId);
-          setId(newId);
-          setMode("read");
-        }}
-      />
+            }
+          : p,
+      ),
     );
-  } else if (mode === "update") {
-    if (!selectedArticle) {
-      _article = <div>데이터를 찾을 수 없습니다.</div>;
-    } else {
-      _article = (
-        <UpdateArticle
-          key={id}
-          title={selectedArticle.title}
-          desc={selectedArticle.desc}
-          level={selectedArticle.level}
-          onSubmit={(_title, _desc, _level) => {
-            setContent((prev) =>
-              prev.map((p) =>
-                p.id == id
-                  ? {
-                      ...p,
-                      title: _title,
-                      desc: _desc,
-                      level: _level,
-                    }
-                  : p,
-              ),
-            );
-            setMode("read");
-          }}
-        />
-      );
+    setMode("read");
+  };
+
+  const renderArticle = () => {
+    switch (mode) {
+      case "read":
+        return (
+          <MyArticle
+            title={selectedArticle?.title ?? welcome.title}
+            desc={selectedArticle?.desc ?? welcome.desc}
+            level={selectedArticle?.level ?? welcome.level}
+            onChangeMode={() => {
+              setMode("update");
+            }}
+            onDelete={handleDelete}
+          />
+        );
+
+      case "create":
+        return <CreateArticle onSubmit={handleSubmitCreate} />;
+
+      case "update":
+        return (
+          <UpdateArticle
+            title={selectedArticle.title}
+            desc={selectedArticle.desc}
+            level={selectedArticle.level}
+            onSubmit={handleSubmitUpdate}
+          />
+        );
+
+      default: //welcome
+        return <MyArticle title={welcome.title} desc={welcome.desc} />;
     }
-  }
+  };
+
+  const handleChangeMode = useCallback((_id) => {
+    console.log(_id);
+
+    setMode("read");
+    setId(_id);
+  }, []);
 
   return (
     <>
@@ -140,8 +143,8 @@ function App() {
         </h1>
         <p>{subject.desc}</p>
       </header> */}
-      <Nav data={content} onChangeMode={handleChangeMode} />
-      {_article}
+      <Nav data={content} id={id} onChangeMode={handleChangeMode} />
+      {renderArticle()}
       <hr />
       <Controls
         onChangeMode={() => {
